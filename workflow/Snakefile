@@ -1,0 +1,104 @@
+configfile: "config/config.yaml"
+
+from peppy import Project
+
+pep = Project(config["pepfile"])
+SAMPLES = [sample.sample_name for sample in pep.samples]
+
+
+def get_sample(wildcards):
+    for sample in pep.samples:
+        if sample.sample_name == wildcards.sample:
+            return sample
+    raise ValueError(f"Sample {wildcards.sample} not found in PEP")
+
+
+rule all:
+    input:
+        expand("results/krona/{sample}.krona.html", sample=SAMPLES)
+
+
+rule prepare_kaiju_db:
+    input:
+        archive=config["kaiju-db"]["local-archive"]
+    output:
+        fmi=config["kaiju-db"]["fmi"],
+        nodes=config["kaiju-db"]["nodes-dmp"],
+        names=config["kaiju-db"]["names-dmp"]
+    log:
+        "logs/kaiju_db/prepare.log"
+    shell:
+        r"""
+        mkdir -p resources/databases/kaiju logs/kaiju_db
+        tar -xzf {input.archive} -C resources/databases/kaiju > {log} 2>&1
+        """
+
+
+rule run_kaiju:
+    input:
+        fastq=lambda wc: get_sample(wc).fastq,
+        fmi=config["kaiju-db"]["fmi"],
+        nodes=config["kaiju-db"]["nodes-dmp"]
+    output:
+        "results/kaiju/{sample}.kaiju.out"
+    log:
+        "logs/kaiju/{sample}.log"
+    threads: config["threads"]["kaiju"]
+    params:
+        db=config["kaiju-db"]["fmi"],
+        nodes=config["kaiju-db"]["nodes-dmp"]
+    conda:
+        "envs/kaiju.yaml"
+    shell:
+        r"""
+        mkdir -p results/kaiju logs/kaiju
+        kaiju \
+          -t {params.nodes} \
+          -f {params.db} \
+          -i {input.fastq} \
+          -o {output} \
+          -z {threads} \
+          > {log} 2>&1
+        """
+
+
+rule kaiju_to_krona:
+    input:
+        kaiju_out="results/kaiju/{sample}.kaiju.out",
+        nodes=config["kaiju-db"]["nodes-dmp"],
+        names=config["kaiju-db"]["names-dmp"]
+    output:
+        "results/krona/{sample}.krona.txt"
+    log:
+        "logs/krona/{sample}.kaiju2krona.log"
+    params:
+        nodes=config["kaiju-db"]["nodes-dmp"],
+        names=config["kaiju-db"]["names-dmp"]
+    conda:
+        "envs/kaiju.yaml"
+    shell:
+        r"""
+        mkdir -p results/krona logs/krona
+        kaiju2krona \
+          -t {params.nodes} \
+          -n {params.names} \
+          -i {input.kaiju_out} \
+          -o {output} \
+          > {log} 2>&1
+        """
+
+
+rule krona_html:
+    input:
+        "results/krona/{sample}.krona.txt"
+    output:
+        "results/krona/{sample}.krona.html"
+    log:
+        "logs/krona/{sample}.ktImportText.log"
+    conda:
+        "envs/kaiju.yaml"
+    shell:
+        r"""
+        mkdir -p logs/krona
+        ktImportText {input} -o {output} > {log} 2>&1
+        """
