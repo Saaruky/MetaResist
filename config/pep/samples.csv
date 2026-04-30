@@ -1,1 +1,2 @@
-sample,sra,target_species,target_taxid
+sample_name,fastq
+SRR26321896,data/raw/SRR26321896.fastq.gz
