@@ -38,3 +38,60 @@ Second, to clone the full workflow run:
 
 ```sh
     git clone https://github.com/IKIM-Essen/MetaResist
+```
+
+### Step 3: Install required tools
+
+Install <sra-tools> for downloading SRA samples:
+
+```sh
+    mamba install -c bioconda -c conda-forge sra-tools
+```
+
+Install <peppy> for handling PEP-based sample metadata:
+
+```sh
+    mamba install -c conda-forge -c bioconda peppy
+```
+
+### Step 4: Download example SRA samples
+
+Example SRA runs used for initial testing:
+
+- SRR26321896 (*Klebsiella pneumoniae*)
+
+Download the sample using <prefetch> and convert it to FASTQ format with <fasterq-dump> :
+
+```sh
+    prefetch SRR26321896
+    fasterq-dump SRR26321896 --split-files --threads 8
+```
+
+For single-end data:
+
+```sh
+    gzip SRR26321896.fastq
+```
+
+### Step 5: Prepare sample metadata
+
+Edit the config/pep/samples.csv file to add your sample:
+
+```sh
+    sample_name,fastq
+    SRR26321896,data/raw/SRR26321896.fastq.gz
+```
+
+### Step 6: Run the workflow 
+
+Perform a dry-run first:
+
+```sh
+    snakemake -n
+```
+
+Run the workflow:
+
+```sh
+    snakemake --cores all --use-conda
+```
