@@ -37,4 +37,4 @@ In all following steps, we will assume that you are inside of that directory.
 Second, to clone the full workflow run:
 
 ```sh
-    git clone https://github.com/Saaruky/MetaResist
+    git clone https://github.com/IKIM-Essen/MetaResist
