@@ -37,6 +37,10 @@ tmp/
 #*.kaiju.out
 #*.krona.txt
 
+results/
+!results/
+!results/**/*.krona.html
+
 # Ignore data files unless you explicitly want to track small test data
 data/
 
