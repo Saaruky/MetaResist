@@ -14,7 +14,6 @@ config/README.md
 # Workflow code
 !workflow
 !workflow/**
-workflow/scripts/test_cont_plot.ipynb
 
 # Keep report resources, but ignore large databases and temp resources
 !resources
