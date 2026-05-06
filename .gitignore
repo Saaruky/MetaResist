@@ -1,0 +1,43 @@
+*
+
+# Keep repository metadata
+!.gitignore
+!.snakemake-workflow-catalog.yml
+!LICENSE
+!README.md
+
+# Configuration
+!config
+!config/**
+config/README.md
+
+# Workflow code
+!workflow
+!workflow/**
+workflow/scripts/test_cont_plot.ipynb
+
+# Keep report resources, but ignore large databases and temp resources
+!resources
+!resources/report
+!resources/report/**
+resources/databases/
+resources/tmp/
+
+# Ignore Snakemake internals and runtime outputs
+.snakemake/
+logs/
+results/
+report/
+reports/
+benchmark/
+tmp/
+
+# Ignore common analysis outputs
+*.log
+*.html
+*.kaiju.out
+*.krona.txt
+
+# Ignore data files unless you explicitly want to track small test data
+data/
+
