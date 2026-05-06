@@ -31,6 +31,9 @@ rule prepare_kaiju_db:
         r"""
         mkdir -p resources/databases/kaiju logs/kaiju_db
         tar -xzf {input.archive} -C resources/databases/kaiju > {log} 2>&1
+        find resources/databases/kaiju -name "*.fmi" -exec cp {{}} {output.fmi} \;
+        find resources/databases/kaiju -name "nodes.dmp" -exec cp {{}} {output.nodes} \;
+        find resources/databases/kaiju -name "names.dmp" -exec cp {{}} {output.names} \;
         """
 
 
