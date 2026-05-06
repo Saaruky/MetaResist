@@ -34,9 +34,9 @@ tmp/
 
 # Ignore common analysis outputs
 *.log
-*.html
-*.kaiju.out
-*.krona.txt
+#*.html
+#*.kaiju.out
+#*.krona.txt
 
 # Ignore data files unless you explicitly want to track small test data
 data/
